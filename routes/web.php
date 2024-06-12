@@ -19,10 +19,10 @@ Route::get('/', function () {
 });
 
 Route::post('/cmi_pyement', function (Request $request) {
-    $base_url = env(('APP_URL'));
+    $base_url = env('APP_URL');
     $client = new CMI\CmiClient([
-        'storekey' => '', // STOREKEY
-        'clientid' => '', // CLIENTID
+        // 'storekey' => '8bq2NlLE7IQ2cve', // STOREKEY
+        // 'clientid' => '600004336', // CLIENTID
         'oid' => $request->facture, // COMMAND ID IT MUST BE UNIQUE
         'shopurl' => $base_url, // SHOP URL FOR REDIRECTION
         'okUrl' => $base_url . '/okFail', // REDIRECTION AFTER SUCCEFFUL PAYMENT
@@ -37,18 +37,19 @@ Route::post('/cmi_pyement', function (Request $request) {
         'BillToCountry' => '504', // YOUR COUNTRY APPEAR IN CMI PLATEFORM NOT REQUIRED (504=MA)
         'tel' => '0604514325', // YOUR PHONE APPEAR IN CMI PLATEFORM NOT REQUIRED
         'amount' => $request->amount, // RETRIEVE AMOUNT WITH METHOD POST
-        'CallbackURL' => $base_url . '/callback', // CALLBACK
+        'CallbackURL' => $base_url . '/cmi_pyement', // CALLBACK
     ]);
-    $client->redirect_post();
+    return $client->redirect_post();
 })->name('cmi_pyement');
 
-route::post('fail', function (Request $request) {
+Route::post('/fail', function (Request $request) {
     return response()->json([
         'status' => 'failed',
         'message' => 'payment failed',
     ]);
 });
-route::post('okFail', function (Request $request) {
+
+Route::post('/okFail', function (Request $request) {
     return response()->json([
         'status' => 'success',
         'message' => 'payment success',
