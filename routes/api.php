@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,4 +17,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::post('/callback', function (Request $request) {
+
+    DB::table("pays")->insert([
+        'nom' => "sss"
+    ]);
+    return response()->json([
+        'status' => 'success',
+        'data' => $request->all(),
+    ]);
 });
