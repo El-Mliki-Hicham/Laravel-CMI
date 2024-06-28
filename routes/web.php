@@ -1,5 +1,6 @@
 <?php
 
+use App\CmiClass\CustomCmiClient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -21,9 +22,9 @@ Route::get('/', function () {
 
 Route::post('/cmi_pyement', function (Request $request) {
     $base_url = env('APP_URL');
-    $client = new CMI\CmiClient([
-        'storekey' => '8bq2NlLE7IQ2cve', // STOREKEY
-        'clientid' => '600004336', // CLIENTID
+    $client = new CustomCmiClient([
+        // 'storekey' => '', // STOREKEY
+        // 'clientid' => '', // CLIENTID
         'oid' => $request->facture, // COMMAND ID IT MUST BE UNIQUE
         'shopurl' => $base_url, // SHOP URL FOR REDIRECTION
         'okUrl' => $base_url . '/okFail', // REDIRECTION AFTER SUCCEFFUL PAYMENT
@@ -40,7 +41,12 @@ Route::post('/cmi_pyement', function (Request $request) {
         'amount' => $request->amount, // RETRIEVE AMOUNT WITH METHOD POST
         'CallbackURL' => "http://127.0.0.1:8100/api/callback", // CALLBACK
     ]);
-    return $client->redirect_post();
+    $encodeUrl = json_encode(['redirect_url' => $client->redirect_post()]);
+    // $client->redirect_post();
+    return response()->json([
+        'status' => true,
+        'link' => $encodeUrl
+    ]);
 })->name('cmi_pyement');
 
 Route::post('/fail', function (Request $request) {
